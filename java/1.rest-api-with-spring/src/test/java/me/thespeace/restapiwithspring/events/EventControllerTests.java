@@ -1,15 +1,20 @@
 package me.thespeace.restapiwithspring.events;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDateTime;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -27,19 +32,47 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * 디스패처 서블릿까지 만들어야 되기 때문에 그렇다고 해서 단위 테스트보다 빠르지는 않다.</p>
  * <p>웹서버까지 띄우는 테스트보다는 조금 덜 걸리지만 단위 테스트보다는 조금 더 걸리는 테스트.</p>
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @WebMvcTest
 public class EventControllerTests {
 
     @Autowired
     MockMvc mockMvc;
 
+    @Autowired
+    ObjectMapper objectMapper;
+
+    /**
+     * <h2>event 생성 테스트: 201 응답 받기</h2>
+     * <ul>테스트 할 것
+     *     <li>입력값들을 전달하면 JSON 응답으로 201이 나오는 지 확인.</li>
+     *     <li>Location 헤더에 생성된 이벤트를 조회할 수 있는 URI 담겨 있는 지 확인.</li>
+     *     <li>id는 DB에 들어갈 때 자동 생성된 값으로 나오는 지 확인.</li>
+     * </ul>
+     */
     @Test
     public void createEvent() throws Exception {
-        mockMvc.perform(post("/api/events/")
+        Event event = Event.builder()
+                        .name("thespeace")
+                        .description("REST API Development with Spring")
+                        .beginEnrollmentDateTime(LocalDateTime.of(2024,10,30,12,30))
+                        .closeEnrollmentDateTime(LocalDateTime.of(2024,10,31,12,30))
+                        .beginEventDateTime(LocalDateTime.of(2024,11,1,12,30))
+                        .endEventDateTime(LocalDateTime.of(2024,11,2,12,30))
+                        .basePrice(100)
+                        .maxPrice(200)
+                        .limitOfEnrollment(100)
+                        .location("강남역")
+                        .build();
+
+        mockMvc.perform(post("/api/events")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaTypes.HAL_JSON))
-                .andExpect(status().isCreated()); //201
+                        .accept(MediaTypes.HAL_JSON)
+                        .content(objectMapper.writeValueAsString(event))) // ObjectMapper를 사용하여 json으로 변환.
+                .andDo(print()) // 요청과 응답 확인 가능.
+                .andExpect(status().isCreated()) //201
+                .andExpect(jsonPath("id").exists()) // id 존재 여부 확인.
+        ;
     }
 
 }
