@@ -31,6 +31,6 @@ public class Event {
     private boolean offline;
     private boolean free;
     @Enumerated(EnumType.STRING) //ORDINAL -> STRING, 추후 enum의 순서가 바뀌면 데이터가 완전 꼬일수 있기 때문.
-    private EventStatus eventStatus;
+    private EventStatus eventStatus = EventStatus.DRAFT;
 
 }

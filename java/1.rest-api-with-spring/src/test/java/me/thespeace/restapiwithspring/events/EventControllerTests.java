@@ -1,12 +1,12 @@
 package me.thespeace.restapiwithspring.events;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -33,9 +33,26 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * <p>MockMvc는 웹서버를 띄우지 않기 때문에 단위 테스트보다는 빠르지만
  * 디스패처 서블릿까지 만들어야 되기 때문에 그렇다고 해서 단위 테스트보다 빠르지는 않다.</p>
  * <p>웹서버까지 띄우는 테스트보다는 조금 덜 걸리지만 단위 테스트보다는 조금 더 걸리는 테스트.</p>
+ *
+ * <br><br>
+ * <br><br>
+ *
+ * <h1>통합 테스트로 전환</h1>
+ * <p>DTO를 적용함으로써 실제 객체는 컨트롤러의 메서드안에서 새로 만들어지게 되어서
+ * 더이상 Mocking이 불가능해졌다. 따라서 통합테스트로 전환하자.</p>
+ * <ul>
+ *     <li>@WebMvcTest 빼고 다음 애노테이션 추가
+ *         <ul>
+ *             <li>@SpringBootTest</li>
+ *             <li>@AutoConfigureMockMvc</li>
+ *         </ul>
+ *     </li>
+ *     <li>Repository @MockBean 코드 제거</li>
+ * </ul>
  */
 @ExtendWith(SpringExtension.class)
-@WebMvcTest
+@SpringBootTest
+@AutoConfigureMockMvc
 public class EventControllerTests {
 
     @Autowired
@@ -43,9 +60,6 @@ public class EventControllerTests {
 
     @Autowired
     ObjectMapper objectMapper;
-
-    @MockBean
-    EventRepository eventRepository;
 
     /**
      * <h2>event 생성 테스트: 201 응답 받기</h2>
@@ -68,9 +82,10 @@ public class EventControllerTests {
                         .maxPrice(200)
                         .limitOfEnrollment(100)
                         .location("강남역")
+                        .free(true) //입력값 제한을 확인하기 위해 일부러 잘못된 값 기재.
+                        .offline(false) //입력값 제한을 확인하기 위해 일부러 잘못된 값 기재.
+                        .eventStatus(EventStatus.PUBLISHED) //입력값 제한을 확인하기 위해 일부러 잘못된 값 기재.
                         .build();
-        event.setId(10);
-        Mockito.when(eventRepository.save(event)).thenReturn(event);
 
         mockMvc.perform(post("/api/events")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -81,6 +96,9 @@ public class EventControllerTests {
                 .andExpect(jsonPath("id").exists()) // id 존재 여부 확인.
                 .andExpect(header().exists(HttpHeaders.LOCATION))
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE,"application/hal+json;charset=UTF-8"))
+                .andExpect(jsonPath("id").value(Matchers.not(100)))
+                .andExpect(jsonPath("free").value(Matchers.not(true)))
+                .andExpect(jsonPath("eventStatus").value(EventStatus.DRAFT.name()))
         ;
     }
 
