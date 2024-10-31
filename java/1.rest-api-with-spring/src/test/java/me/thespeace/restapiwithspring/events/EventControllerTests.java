@@ -71,7 +71,7 @@ public class EventControllerTests {
      */
     @Test
     public void createEvent() throws Exception {
-        Event event = Event.builder()
+        EventDto event = EventDto.builder()
                         .name("thespeace")
                         .description("REST API Development with Spring")
                         .beginEnrollmentDateTime(LocalDateTime.of(2024,10,30,12,30))
@@ -82,9 +82,6 @@ public class EventControllerTests {
                         .maxPrice(200)
                         .limitOfEnrollment(100)
                         .location("강남역")
-                        .free(true) //입력값 제한을 확인하기 위해 일부러 잘못된 값 기재.
-                        .offline(false) //입력값 제한을 확인하기 위해 일부러 잘못된 값 기재.
-                        .eventStatus(EventStatus.PUBLISHED) //입력값 제한을 확인하기 위해 일부러 잘못된 값 기재.
                         .build();
 
         mockMvc.perform(post("/api/events")
@@ -99,6 +96,45 @@ public class EventControllerTests {
                 .andExpect(jsonPath("id").value(Matchers.not(100)))
                 .andExpect(jsonPath("free").value(Matchers.not(true)))
                 .andExpect(jsonPath("eventStatus").value(EventStatus.DRAFT.name()))
+        ;
+    }
+
+    /**
+     * <h2>입력값 이외에 에러 테스트: 400 상태 코드 응답 확인</h2>
+     * <p>createEvent 테스트가 잘못된 필드를 무시했다면, 이 테스트는
+     * 유효하지 않은 필드로 에러가 발생하는지를 확인(unknown properties).</p>
+     * <br><br>
+     * <h2>테스트 할 것</h2>
+     * <ul>
+     *     <li>입력값으로 누가 id나 eventStatus, offline, free 이런 데이터까지 같이 주면?</li>
+     *     <ul><li>Bad_Request로 응답 vs 받기로 한 값 이외는 무시</li></ul>
+     * </ul>
+     */
+    @Test
+    public void createEvent_Bad_Request() throws Exception {
+        Event event = Event.builder()
+                        .id(100)
+                        .name("thespeace")
+                        .description("REST API Development with Spring")
+                        .beginEnrollmentDateTime(LocalDateTime.of(2024,10,30,12,30))
+                        .closeEnrollmentDateTime(LocalDateTime.of(2024,10,31,12,30))
+                        .beginEventDateTime(LocalDateTime.of(2024,11,1,12,30))
+                        .endEventDateTime(LocalDateTime.of(2024,11,2,12,30))
+                        .basePrice(100)
+                        .maxPrice(200)
+                        .limitOfEnrollment(100)
+                        .location("강남역")
+                        .free(true)
+                        .offline(false)
+                        .eventStatus(EventStatus.PUBLISHED)
+                        .build();
+
+        mockMvc.perform(post("/api/events")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaTypes.HAL_JSON)
+                        .content(objectMapper.writeValueAsString(event)))
+                        .andDo(print())
+                        .andExpect(status().isBadRequest())
         ;
     }
 
