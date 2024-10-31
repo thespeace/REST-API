@@ -151,4 +151,30 @@ public class EventControllerTests {
                         .content(this.objectMapper.writeValueAsString(eventDto)))
                 .andExpect(status().isBadRequest());
     }
+
+    /**
+     * <h2>EventDto 유효성 검증이 작동하는지 확인</h2>
+     * <p>잘못된 데이터가 들어왔을 경우 400 상태 코드 응답 확인</p>
+     * <p>annotation으로 검증이 어려우니 검증기(EvnetValidator) 사용</p>
+     */
+    @Test
+    public void createEvent_Bad_Request_Wrong_Input() throws Exception {
+        EventDto eventDto = EventDto.builder()
+                .name("thespeace")
+                .description("REST API Development with Spring")
+                .beginEnrollmentDateTime(LocalDateTime.of(2024,10,30,12,30))
+                .closeEnrollmentDateTime(LocalDateTime.of(2024,10,31,12,30))
+                .beginEventDateTime(LocalDateTime.of(2024,11,3,12,30))
+                .endEventDateTime(LocalDateTime.of(2024,11,2,12,30))
+                .basePrice(10000)
+                .maxPrice(200)
+                .limitOfEnrollment(100)
+                .location("강남역")
+                .build();
+
+        this.mockMvc.perform(post("/api/events")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(this.objectMapper.writeValueAsString(eventDto)))
+                .andExpect(status().isBadRequest());
+    }
 }
