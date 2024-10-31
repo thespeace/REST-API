@@ -41,6 +41,9 @@ dependencies {
     // https://mvnrepository.com/artifact/org.modelmapper/modelmapper
     implementation group: 'org.modelmapper', name: 'modelmapper', version: '3.2.1'
 
+    // To using Validation(If spring boot version is 2.3 or higher, add validation dependency separately)
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: '2.5.2'
+
 //    testImplementation 'com.h2database:h2'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.9.2'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'

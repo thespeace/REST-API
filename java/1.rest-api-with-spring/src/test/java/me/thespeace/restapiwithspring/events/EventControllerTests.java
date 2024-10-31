@@ -138,4 +138,17 @@ public class EventControllerTests {
         ;
     }
 
+    /**
+     * <h2>EventDto 유효성 검증이 작동하는지 확인</h2>
+     * <p>객체 필드에 아무런 값도 채워지지 않은 상태로 전송되었을 때 400 상태 코드 응답 확인</p>
+     */
+    @Test
+    public void createEvent_Bad_Request_Empty_Input() throws Exception {
+        EventDto eventDto = EventDto.builder().build();
+
+        this.mockMvc.perform(post("/api/events")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(this.objectMapper.writeValueAsString(eventDto)))
+                .andExpect(status().isBadRequest());
+    }
 }
