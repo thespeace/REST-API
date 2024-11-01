@@ -1,7 +1,9 @@
 package me.thespeace.restapiwithspring.events;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import me.thespeace.restapiwithspring.common.TestDescription;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,6 +72,8 @@ public class EventControllerTests {
      * </ul>
      */
     @Test
+    @DisplayName("정상적으로 이벤트를 생성하는 테스트")
+    @TestDescription("정상적으로 이벤트를 생성하는 테스트")
     public void createEvent() throws Exception {
         EventDto event = EventDto.builder()
                         .name("thespeace")
@@ -111,6 +115,8 @@ public class EventControllerTests {
      * </ul>
      */
     @Test
+    @DisplayName("입력 받을 수 없는 값을 사용한 경우에 에러가 발생하는 테스트")
+    @TestDescription("입력 받을 수 없는 값을 사용한 경우에 에러가 발생하는 테스트")
     public void createEvent_Bad_Request() throws Exception {
         Event event = Event.builder()
                         .id(100)
@@ -143,6 +149,8 @@ public class EventControllerTests {
      * <p>객체 필드에 아무런 값도 채워지지 않은 상태로 전송되었을 때 400 상태 코드 응답 확인</p>
      */
     @Test
+    @DisplayName("입력 값이 비어있는 경우에 에러가 발생하는 테스트")
+    @TestDescription("입력 값이 비어있는 경우에 에러가 발생하는 테스트")
     public void createEvent_Bad_Request_Empty_Input() throws Exception {
         EventDto eventDto = EventDto.builder().build();
 
@@ -158,6 +166,8 @@ public class EventControllerTests {
      * <p>annotation으로 검증이 어려우니 검증기(EvnetValidator) 사용</p>
      */
     @Test
+    @DisplayName("입력 값이 잘못된 경우에 에러가 발생하는 테스트")
+    @TestDescription("입력 값이 잘못된 경우에 에러가 발생하는 테스트")
     public void createEvent_Bad_Request_Wrong_Input() throws Exception {
         EventDto eventDto = EventDto.builder()
                 .name("thespeace")
