@@ -37,4 +37,73 @@ class EventTest {
         assertThat(event.getName()).isEqualTo(name);
         assertThat(event.getDescription()).isEqualTo(description);
     }
+
+    /**
+     * <h2>무료 여부 단위 테스트</h2>
+     */
+    @Test
+    public void testFree() {
+        // Given(무료일 경우)
+        Event event = Event.builder()
+                .basePrice(0)
+                .maxPrice(0)
+                .build();
+
+        // When
+        event.update();
+
+        // Then
+        assertThat(event.isFree()).isTrue();
+
+        // Given(유료인 경우, basePrice 값 존재)
+        event = Event.builder()
+                .basePrice(100)
+                .maxPrice(0)
+                .build();
+
+        // When
+        event.update();
+
+        // Then
+        assertThat(event.isFree()).isFalse();
+
+        // Given(유료인 경우, maxPrice 값 존재)
+        event = Event.builder()
+                .basePrice(0)
+                .maxPrice(100)
+                .build();
+
+        // When
+        event.update();
+
+        // Then
+        assertThat(event.isFree()).isFalse();
+    }
+
+    /**
+     * <h2>장소 여부 단위 테스트</h2>
+     */
+    @Test
+    public void testOffline() {
+        // Given(장소가 있는 경우)
+        Event event = Event.builder()
+                .location("강남역")
+                .build();
+
+        // When
+        event.update();
+
+        // Then
+        assertThat(event.isOffline()).isTrue();
+
+        // Given(장소가 없는 경우)
+        event = Event.builder()
+                .build();
+
+        // When
+        event.update();
+
+        // Then
+        assertThat(event.isOffline()).isFalse();
+    }
 }

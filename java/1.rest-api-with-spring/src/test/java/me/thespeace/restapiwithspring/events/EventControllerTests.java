@@ -97,8 +97,8 @@ public class EventControllerTests {
                 .andExpect(jsonPath("id").exists()) // id 존재 여부 확인.
                 .andExpect(header().exists(HttpHeaders.LOCATION))
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE,"application/hal+json;charset=UTF-8"))
-                .andExpect(jsonPath("id").value(Matchers.not(100)))
-                .andExpect(jsonPath("free").value(Matchers.not(true)))
+                .andExpect(jsonPath("free").value(false))
+                .andExpect(jsonPath("offline").value(true))
                 .andExpect(jsonPath("eventStatus").value(EventStatus.DRAFT.name()))
         ;
     }
