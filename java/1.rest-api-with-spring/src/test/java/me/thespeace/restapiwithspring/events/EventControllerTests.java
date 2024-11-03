@@ -100,6 +100,9 @@ public class EventControllerTests {
                 .andExpect(jsonPath("free").value(false))
                 .andExpect(jsonPath("offline").value(true))
                 .andExpect(jsonPath("eventStatus").value(EventStatus.DRAFT.name()))
+                .andExpect(jsonPath("_links.self").exists()) // view
+                .andExpect(jsonPath("_links.query-events").exists()) // 목록으로 가는 링크
+                .andExpect(jsonPath("_links.update-event").exists()) // update 링크
         ;
     }
 
