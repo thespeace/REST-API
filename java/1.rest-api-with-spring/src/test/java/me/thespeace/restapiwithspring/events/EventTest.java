@@ -1,6 +1,11 @@
 package me.thespeace.restapiwithspring.events;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -40,70 +45,56 @@ class EventTest {
 
     /**
      * <h2>무료 여부 단위 테스트</h2>
+     * <p>junit-params를 사용해서 중복 제거</p>
      */
-    @Test
-    public void testFree() {
-        // Given(무료일 경우)
+    @ParameterizedTest
+    @MethodSource("paramsForTestFree")
+    public void testFree(int basePrice, int maxPrice, boolean isFree) {
+        // Given
         Event event = Event.builder()
-                .basePrice(0)
-                .maxPrice(0)
+                .basePrice(basePrice)
+                .maxPrice(maxPrice)
                 .build();
 
         // When
         event.update();
 
         // Then
-        assertThat(event.isFree()).isTrue();
+        assertThat(event.isFree()).isEqualTo(isFree);
+    }
 
-        // Given(유료인 경우, basePrice 값 존재)
-        event = Event.builder()
-                .basePrice(100)
-                .maxPrice(0)
-                .build();
-
-        // When
-        event.update();
-
-        // Then
-        assertThat(event.isFree()).isFalse();
-
-        // Given(유료인 경우, maxPrice 값 존재)
-        event = Event.builder()
-                .basePrice(0)
-                .maxPrice(100)
-                .build();
-
-        // When
-        event.update();
-
-        // Then
-        assertThat(event.isFree()).isFalse();
+    private static Stream<Arguments> paramsForTestFree() { // argument source method
+        return Stream.of(
+                Arguments.of(0,0, true),
+                Arguments.of(100, 0, false),
+                Arguments.of(0, 100, false),
+                Arguments.of(100, 200, false)
+        );
     }
 
     /**
      * <h2>장소 여부 단위 테스트</h2>
      */
-    @Test
-    public void testOffline() {
+    @ParameterizedTest
+    @MethodSource("paramsForTestOffline")
+    public void testOffline(String location, boolean isOffline) {
         // Given(장소가 있는 경우)
         Event event = Event.builder()
-                .location("강남역")
+                .location(location)
                 .build();
 
         // When
         event.update();
 
         // Then
-        assertThat(event.isOffline()).isTrue();
+        assertThat(event.isOffline()).isEqualTo(isOffline);
+    }
 
-        // Given(장소가 없는 경우)
-        event = Event.builder()
-                .build();
-
-        // When
-        event.update();
-
-        // Then
-        assertThat(event.isOffline()).isFalse();
+    private static Stream<Arguments> paramsForTestOffline() { // argument source method
+        return Stream.of(
+                Arguments.of("강남역", true),
+                Arguments.of(null, false),
+                Arguments.of("        ", false)
+        );
     }
 }
