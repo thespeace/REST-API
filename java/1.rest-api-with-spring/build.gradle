@@ -59,4 +59,5 @@ tasks.named('test') {
 tasks.named('asciidoctor') {
     inputs.dir snippetsDir
     dependsOn test
+    outputs.dir file("build/docs/asciidoc")
 }

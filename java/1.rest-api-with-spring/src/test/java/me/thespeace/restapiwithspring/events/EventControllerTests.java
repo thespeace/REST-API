@@ -1,22 +1,31 @@
 package me.thespeace.restapiwithspring.events;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import me.thespeace.restapiwithspring.common.RestDocsConfiguration;
 import me.thespeace.restapiwithspring.common.TestDescription;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.RestDocumentationContextProvider;
+import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.time.LocalDateTime;
 
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -52,9 +61,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *     <li>Repository @MockBean 코드 제거</li>
  * </ul>
  */
-@ExtendWith(SpringExtension.class)
+@ExtendWith({SpringExtension.class, RestDocumentationExtension.class})
 @SpringBootTest
 @AutoConfigureMockMvc
+@AutoConfigureRestDocs(outputDir = "build/generated-snippets") //REST Docs 자동 설정
+@Import(RestDocsConfiguration.class)
 public class EventControllerTests {
 
     @Autowired
@@ -103,6 +114,7 @@ public class EventControllerTests {
                 .andExpect(jsonPath("_links.self").exists()) // view
                 .andExpect(jsonPath("_links.query-events").exists()) // 목록으로 가는 링크
                 .andExpect(jsonPath("_links.update-event").exists()) // update 링크
+                .andDo(document("create-event"));
         ;
     }
 
