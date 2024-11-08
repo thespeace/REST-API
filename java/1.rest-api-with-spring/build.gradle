@@ -31,7 +31,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-hateoas'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     runtimeOnly 'org.postgresql:postgresql'
-    runtimeOnly 'com.h2database:h2'
 
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
@@ -41,7 +40,7 @@ dependencies {
     // To using Validation(If spring boot version is 2.3 or higher, add validation dependency separately)
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: '2.5.2'
 
-//    testImplementation 'com.h2database:h2'
+    testImplementation 'com.h2database:h2'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.9.3'
     testImplementation 'org.junit.jupiter:junit-jupiter-params:5.7.0'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
