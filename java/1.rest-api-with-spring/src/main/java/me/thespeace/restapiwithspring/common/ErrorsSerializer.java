@@ -50,6 +50,7 @@ public class ErrorsSerializer extends JsonSerializer<Errors> { // 제네릭으�
 
     @Override
     public void serialize(Errors errors, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+        gen.writeFieldName("errors");
         gen.writeStartArray();
 
         // filed errors

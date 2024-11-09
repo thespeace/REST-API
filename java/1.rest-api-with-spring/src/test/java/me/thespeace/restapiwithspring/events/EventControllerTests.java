@@ -256,11 +256,12 @@ public class EventControllerTests {
                         .content(this.objectMapper.writeValueAsString(eventDto)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$[0].objectName").exists()) // 에러 응답 메시지에 에러에 대한 정보(errors) 추가.
+                .andExpect(jsonPath("errors[0].objectName").exists()) // 에러 응답 메시지에 에러에 대한 정보(errors) 추가.
 //                .andExpect(jsonPath("$[0].field").exists())
-                .andExpect(jsonPath("$[0].defaultMessage").exists())
-                .andExpect(jsonPath("$[0].code").exists())
+                .andExpect(jsonPath("errors[0].defaultMessage").exists())
+                .andExpect(jsonPath("errors[0].code").exists())
 //                .andExpect(jsonPath("$[0].rejectedValue").exists())
+                .andExpect(jsonPath("_links.index").exists())
         ;
     }
 }
