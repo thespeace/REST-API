@@ -1,29 +1,13 @@
 package me.thespeace.restapiwithspring.events;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import me.thespeace.restapiwithspring.common.RestDocsConfiguration;
+import me.thespeace.restapiwithspring.common.BaseControllerTest;
 import me.thespeace.restapiwithspring.common.TestDescription;
-import org.hamcrest.Matchers;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.RestDocumentationContextProvider;
-import org.springframework.restdocs.RestDocumentationExtension;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
 import java.time.LocalDateTime;
 import java.util.stream.IntStream;
@@ -68,25 +52,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *     <li>Repository @MockBean 코드 제거</li>
  * </ul>
  */
-@ExtendWith({SpringExtension.class, RestDocumentationExtension.class})
-@SpringBootTest
-@AutoConfigureMockMvc
-@AutoConfigureRestDocs(outputDir = "build/generated-snippets") //REST Docs 자동 설정
-@Import(RestDocsConfiguration.class)
-@ActiveProfiles("test")
-public class EventControllerTests {
-
-    @Autowired
-    MockMvc mockMvc;
-
-    @Autowired
-    ObjectMapper objectMapper;
+public class EventControllerTests extends BaseControllerTest {
 
     @Autowired
     EventRepository eventRepository;
-
-    @Autowired
-    ModelMapper modelMapper;
 
     /**
      * <h2>event 생성 테스트: 201 응답 받기</h2>
