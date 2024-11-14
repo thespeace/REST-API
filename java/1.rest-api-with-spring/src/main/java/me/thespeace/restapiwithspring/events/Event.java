@@ -1,6 +1,7 @@
 package me.thespeace.restapiwithspring.events;
 
 import lombok.*;
+import me.thespeace.restapiwithspring.accounts.Account;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -32,6 +33,8 @@ public class Event {
     private boolean free;
     @Enumerated(EnumType.STRING) //ORDINAL -> STRING, 추후 enum의 순서가 바뀌면 데이터가 완전 꼬일수 있기 때문.
     private EventStatus eventStatus = EventStatus.DRAFT;
+    @ManyToOne
+    private Account manager;
 
     public void update() {
         // Update Free
