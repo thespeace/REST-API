@@ -4,6 +4,7 @@ import me.thespeace.restapiwithspring.accounts.Account;
 import me.thespeace.restapiwithspring.accounts.AccountRepository;
 import me.thespeace.restapiwithspring.accounts.AccountRole;
 import me.thespeace.restapiwithspring.accounts.AccountService;
+import me.thespeace.restapiwithspring.common.AppProperties;
 import me.thespeace.restapiwithspring.common.BaseControllerTest;
 import me.thespeace.restapiwithspring.common.TestDescription;
 import org.aspectj.lang.annotation.Before;
@@ -74,6 +75,9 @@ public class EventControllerTests extends BaseControllerTest {
 
     @Autowired
     AccountRepository accountRepository;
+
+    @Autowired
+    AppProperties appProperties;
 
     @BeforeEach
     public void setUp() {
@@ -180,22 +184,17 @@ public class EventControllerTests extends BaseControllerTest {
 
     private String getAccessToken() throws Exception {
         // Given
-        String username = "thespeace1@gmail.com";
-        String password = "pass";
-        Account thespeace = Account.builder()
-                .email(username)
-                .password(password)
+        Account user = Account.builder()
+                .email(appProperties.getUserUsername())
+                .password(appProperties.getUserPassword())
                 .roles(Set.of(AccountRole.ADMIN, AccountRole.USER))
                 .build();
-        this.accountService.saveAccount(thespeace);
-
-        String clientId = "myApp";
-        String clientSecret = "pass";
+        this.accountService.saveAccount(user);
 
         ResultActions perform = this.mockMvc.perform(post("/oauth/token")
-                .with(httpBasic(clientId, clientSecret))
-                .param("username", username)
-                .param("password", password)
+                .with(httpBasic(appProperties.getClientId(), appProperties.getClientSecret()))
+                .param("username", appProperties.getUserUsername())
+                .param("password", appProperties.getUserPassword())
                 .param("grant_type", "password"));
 
         var responseBody = perform.andReturn().getResponse().getContentAsString();

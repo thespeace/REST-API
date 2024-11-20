@@ -3,6 +3,7 @@ package me.thespeace.restapiwithspring.configs;
 import me.thespeace.restapiwithspring.accounts.Account;
 import me.thespeace.restapiwithspring.accounts.AccountRole;
 import me.thespeace.restapiwithspring.accounts.AccountService;
+import me.thespeace.restapiwithspring.common.AppProperties;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
@@ -40,14 +41,24 @@ public class AppConfig {
             @Autowired
             AccountService accountService;
 
+            @Autowired
+            AppProperties appProperties;
+
             @Override
             public void run(ApplicationArguments args) throws Exception {
-                Account thespeace = Account.builder()
-                        .email("thespeace1@gmail.com")
-                        .password("pass")
+                Account admin = Account.builder()
+                        .email(appProperties.getAdminUsername())
+                        .password(appProperties.getAdminPassword())
                         .roles(Set.of(AccountRole.ADMIN, AccountRole.USER))
                         .build();
-                accountService.saveAccount(thespeace);
+                accountService.saveAccount(admin);
+
+                Account user = Account.builder()
+                        .email(appProperties.getUserUsername())
+                        .password(appProperties.getUserPassword())
+                        .roles(Set.of(AccountRole.USER))
+                        .build();
+                accountService.saveAccount(user);
             }
         };
     }

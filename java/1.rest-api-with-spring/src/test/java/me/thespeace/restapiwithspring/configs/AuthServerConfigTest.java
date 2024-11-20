@@ -3,6 +3,7 @@ package me.thespeace.restapiwithspring.configs;
 import me.thespeace.restapiwithspring.accounts.Account;
 import me.thespeace.restapiwithspring.accounts.AccountRole;
 import me.thespeace.restapiwithspring.accounts.AccountService;
+import me.thespeace.restapiwithspring.common.AppProperties;
 import me.thespeace.restapiwithspring.common.BaseControllerTest;
 import me.thespeace.restapiwithspring.common.TestDescription;
 import org.junit.jupiter.api.DisplayName;
@@ -22,6 +23,9 @@ public class AuthServerConfigTest extends BaseControllerTest {
     @Autowired
     AccountService accountService;
 
+    @Autowired
+    AppProperties appProperties;
+
     /**
      * <p>인증 토큰을 받기 위해 Grant Type의 인증 방법 6가지 중 2가지만 사용.</p>
      * <p>Password, Refresh Token만 지원, 최초의 OAuth 토큰은 Password로 발급.</p>
@@ -32,23 +36,10 @@ public class AuthServerConfigTest extends BaseControllerTest {
     @DisplayName("인증 토큰을 발급 받는 테스트")
     @TestDescription("인증 토큰을 발급 받는 테스트")
     public void getAuthToken() throws Exception{
-        // Given
-        String username = "thespeace1@gmail.com";
-        String password = "pass";
-        Account thespeace = Account.builder()
-                .email(username)
-                .password(password)
-                .roles(Set.of(AccountRole.ADMIN, AccountRole.USER))
-                .build();
-        this.accountService.saveAccount(thespeace);
-
-        String clientId = "myApp";
-        String clientSecret = "pass";
-
         this.mockMvc.perform(post("/oauth/token")
-                .with(httpBasic(clientId, clientSecret))
-                .param("username",username)
-                .param("password",password)
+                .with(httpBasic(appProperties.getClientId(), appProperties.getClientSecret()))
+                .param("username", appProperties.getUserUsername())
+                .param("password", appProperties.getUserPassword())
                 .param("grant_type","password"))
                 .andDo(print())
                 .andExpect(status().isOk())
