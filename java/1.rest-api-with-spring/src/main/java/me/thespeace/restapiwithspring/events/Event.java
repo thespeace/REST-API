@@ -1,7 +1,9 @@
 package me.thespeace.restapiwithspring.events;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.*;
 import me.thespeace.restapiwithspring.accounts.Account;
+import me.thespeace.restapiwithspring.accounts.AccountSerializer;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -34,6 +36,7 @@ public class Event {
     @Enumerated(EnumType.STRING) //ORDINAL -> STRING, 추후 enum의 순서가 바뀌면 데이터가 완전 꼬일수 있기 때문.
     private EventStatus eventStatus = EventStatus.DRAFT;
     @ManyToOne
+    @JsonSerialize(using = AccountSerializer.class)
     private Account manager;
 
     public void update() {
