@@ -5,10 +5,7 @@ import me.thespeace.restapiwithspring.accounts.AccountRepository;
 import me.thespeace.restapiwithspring.accounts.AccountRole;
 import me.thespeace.restapiwithspring.accounts.AccountService;
 import me.thespeace.restapiwithspring.common.AppProperties;
-import me.thespeace.restapiwithspring.common.BaseControllerTest;
-import me.thespeace.restapiwithspring.common.TestDescription;
-import org.aspectj.lang.annotation.Before;
-import org.codehaus.jackson.JsonParser;
+import me.thespeace.restapiwithspring.common.BaseTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,9 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.common.util.Jackson2JsonParser;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -67,7 +61,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *     <li>Repository @MockBean 코드 제거</li>
  * </ul>
  */
-public class EventControllerTests extends BaseControllerTest {
+public class EventControllerTests extends BaseTest {
 
     @Autowired
     EventRepository eventRepository;
@@ -97,7 +91,6 @@ public class EventControllerTests extends BaseControllerTest {
      */
     @Test
     @DisplayName("정상적으로 이벤트를 생성하는 테스트")
-    @TestDescription("정상적으로 이벤트를 생성하는 테스트")
     public void createEvent() throws Exception {
         EventDto event = EventDto.builder()
                         .name("thespeace")
@@ -223,7 +216,6 @@ public class EventControllerTests extends BaseControllerTest {
      */
     @Test
     @DisplayName("입력 받을 수 없는 값을 사용한 경우에 에러가 발생하는 테스트")
-    @TestDescription("입력 받을 수 없는 값을 사용한 경우에 에러가 발생하는 테스트")
     public void createEvent_Bad_Request() throws Exception {
         Event event = Event.builder()
                         .id(100)
@@ -258,7 +250,6 @@ public class EventControllerTests extends BaseControllerTest {
      */
     @Test
     @DisplayName("입력 값이 비어있는 경우에 에러가 발생하는 테스트")
-    @TestDescription("입력 값이 비어있는 경우에 에러가 발생하는 테스트")
     public void createEvent_Bad_Request_Empty_Input() throws Exception {
         EventDto eventDto = EventDto.builder().build();
 
@@ -276,7 +267,6 @@ public class EventControllerTests extends BaseControllerTest {
      */
     @Test
     @DisplayName("입력 값이 잘못된 경우에 에러가 발생하는 테스트")
-    @TestDescription("입력 값이 잘못된 경우에 에러가 발생하는 테스트")
     public void createEvent_Bad_Request_Wrong_Input() throws Exception {
         EventDto eventDto = EventDto.builder()
                 .name("thespeace")
@@ -314,7 +304,6 @@ public class EventControllerTests extends BaseControllerTest {
      */
     @Test
     @DisplayName("사용자 인증 전, 30개의 이벤트를 10개씩 두번째 페이지 조회하기")
-    @TestDescription("사용자 인증 전,30개의 이벤트를 10개씩 두번째 페이지 조회하기")
     public void queryEvents() throws Exception {
         // Given
         IntStream.range(0, 30).forEach(this::generateEvent);
@@ -337,7 +326,6 @@ public class EventControllerTests extends BaseControllerTest {
 
     @Test
     @DisplayName("사용자 인증 후, 30개의 이벤트를 10개씩 두번째 페이지 조회하기")
-    @TestDescription("사용자 인증 후, 30개의 이벤트를 10개씩 두번째 페이지 조회하기")
     public void queryEventsWithAuthentication() throws Exception {
         // Given
         IntStream.range(0, 30).forEach(this::generateEvent);
@@ -361,7 +349,6 @@ public class EventControllerTests extends BaseControllerTest {
 
     @Test
     @DisplayName("기존의 이벤트를 하나 조회하기")
-    @TestDescription("기존의 이벤트를 하나 조회하기")
     public void getEvent() throws Exception {
         // Given
         Account account = this.createAccount();
@@ -380,7 +367,6 @@ public class EventControllerTests extends BaseControllerTest {
 
     @Test
     @DisplayName("없는 이벤트를 조회했을 때 404 응답 받기")
-    @TestDescription("없는 이벤트를 조회했을 때 404 응답 받기")
     public void getEvent404() throws Exception {
         // When & Then
         this.mockMvc.perform(get("/api/events/11883"))
@@ -390,7 +376,6 @@ public class EventControllerTests extends BaseControllerTest {
 
     @Test
     @DisplayName("이벤트를 정상적으로 수정하기")
-    @TestDescription("이벤트를 정상적으로 수정하기")
     public void updateEvent() throws Exception{
         // Given
         Account account = this.createAccount();
@@ -415,7 +400,6 @@ public class EventControllerTests extends BaseControllerTest {
 
     @Test
     @DisplayName("입력값이 비어있는 경우에 이벤트 수정 실패")
-    @TestDescription("입력값이 비어있는 경우에 이벤트 수정 실패")
     public void updateEvent400_Empty() throws Exception{
         // Given
         Event event = this.generateEvent(200);
@@ -434,7 +418,6 @@ public class EventControllerTests extends BaseControllerTest {
 
     @Test
     @DisplayName("입력값이 잘못된 경우에 이벤트 수정 실패")
-    @TestDescription("입력값이 잘못된 경우에 이벤트 수정 실패")
     public void updateEvent400_Wrong() throws Exception{
         // Given
         Event event = this.generateEvent(200);
@@ -455,7 +438,6 @@ public class EventControllerTests extends BaseControllerTest {
 
     @Test
     @DisplayName("존재하지 않는 이벤트 수정 실패")
-    @TestDescription("존재하지 않는 이벤트 수정 실패")
     public void updateEvent404() throws Exception{
         // Given
         Event event = this.generateEvent(200);
